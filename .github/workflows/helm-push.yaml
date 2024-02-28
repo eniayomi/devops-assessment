@@ -3,7 +3,7 @@ name: Helm Chart Push
 on:
   push:
     branches:
-      - part4
+      - main
 
 jobs:
   package-and-push-chart:
