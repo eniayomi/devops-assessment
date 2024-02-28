@@ -18,11 +18,11 @@ jobs:
     - name: Set up Helm
       uses: azure/setup-helm@v1
 
-      - name: 'Log into Azure using github secret AZURE_CREDENTIALS'
-        uses: Azure/login@v1.6.1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-          enable-AzPSSession: true
+    - name: 'Log into Azure using github secret AZURE_CREDENTIALS'
+      uses: Azure/login@v1.6.1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        enable-AzPSSession: true
 
     - name: Package Helm Chart
       run: |
