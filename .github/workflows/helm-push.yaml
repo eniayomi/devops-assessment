@@ -30,9 +30,11 @@ jobs:
           az storage blob upload -c $AZURE_CONTAINER_NAME --account-name $AZURE_ACCOUNT_NAME -f ./list-chart-0.1.0.tgz -n list-chart-0.1.0.tgz --overwrite
 
     - name: Update Helm Repo Index
-      run: |
-        az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
-        az storage blob download --container-name $AZURE_CONTAINER_NAME --name index.yaml --file ./index.yaml --account-name $AZURE_ACCOUNT_NAME
-        helm repo index . --merge ./index.yaml
-        az storage blob upload --container-name $AZURE_CONTAINER_NAME --name index.yaml --file ./index.yaml --account-name $AZURE_ACCOUNT_NAME
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+          az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
+          az storage blob download --container-name $AZURE_CONTAINER_NAME --name index.yaml --file ./index.yaml --account-name $AZURE_ACCOUNT_NAME
+          helm repo index . --merge ./index.yaml
+          az storage blob upload --container-name $AZURE_CONTAINER_NAME --name index.yaml --file ./index.yaml --account-name $AZURE_ACCOUNT_NAME
 
