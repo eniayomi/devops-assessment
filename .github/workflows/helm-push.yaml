@@ -18,23 +18,23 @@ jobs:
     - name: Set up Helm
       uses: azure/setup-helm@v1
 
+      - name: 'Log into Azure using github secret AZURE_CREDENTIALS'
+        uses: Azure/login@v1.6.1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          enable-AzPSSession: true
+
     - name: Package Helm Chart
       run: |
         helm package ./part-2/list-chart 
         
-    - name: Install Azure CLI
-      uses: azure/CLI@v1
-      with:
-        inlineScript: |
-          az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
-          az storage blob upload -c $AZURE_CONTAINER_NAME --account-name $AZURE_ACCOUNT_NAME -f ./list-chart-0.1.0.tgz -n list-chart-0.1.0.tgz --overwrite
+    - name: Push Helm chart to Azure blob
+      run: |
+        az storage blob upload -c $AZURE_CONTAINER_NAME --account-name $AZURE_ACCOUNT_NAME -f ./list-chart-0.1.0.tgz -n list-chart-0.1.0.tgz --overwrite
 
     - name: Update Helm Repo Index
-      uses: azure/CLI@v1
-      with:
-        inlineScript: |
-          az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
-          az storage blob download --container-name $AZURE_CONTAINER_NAME --name index.yaml --file ./index.yaml --account-name $AZURE_ACCOUNT_NAME
-          helm repo index . --merge ./index.yaml
-          az storage blob upload --container-name $AZURE_CONTAINER_NAME --name index.yaml --file ./index.yaml --account-name $AZURE_ACCOUNT_NAME
+      run: |
+        az storage blob download --container-name $AZURE_CONTAINER_NAME --name index.yaml --file ./index.yaml --account-name $AZURE_ACCOUNT_NAME
+        helm repo index . --merge ./index.yaml
+        az storage blob upload --container-name $AZURE_CONTAINER_NAME --name index.yaml --file ./index.yaml --account-name $AZURE_ACCOUNT_NAME
 
