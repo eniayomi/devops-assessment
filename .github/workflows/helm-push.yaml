@@ -36,5 +36,6 @@ jobs:
       run: |
         az storage blob download --container-name $AZURE_CONTAINER_NAME --name index.yaml --file ./index.yaml --account-name $AZURE_ACCOUNT_NAME
         helm repo index . --merge ./index.yaml
-        az storage blob upload --container-name $AZURE_CONTAINER_NAME --name index.yaml --file ./index.yaml --account-name $AZURE_ACCOUNT_NAME
+        cat index.yaml
+        az storage blob upload --container-name $AZURE_CONTAINER_NAME --name index.yaml --file ./index.yaml --account-name $AZURE_ACCOUNT_NAME --overwrite 
 
